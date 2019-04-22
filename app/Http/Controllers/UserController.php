@@ -16,18 +16,49 @@ class UserController extends Controller
 			$json= $request->input('json',null);
 			$params=json_decode($json);//objeto
 			$paramsArray=json_decode($json,true);//array
-		//Validar Datos
+
+			if(!empty($params) && !empty($paramsArray)){
+				//Limpiar Datos
+		 	$paramsArray=array_map('trim',$paramsArray);
+
+				//Validar Datos
+					$validate = \Validator::make($paramsArray,[
+						'name' => 'required|alpha',
+						'surname'=>'required|alpha',
+						'email'=>'required|email',
+						'password'=>'required'
+					]);
+					 if($validate->fails()){
+					 	$data = array(
+						'status' => 'error' ,
+						'code' => 404 ,
+						'message' => 'El usuario no se ha creado',
+						'erros' =>  $validate->errors());
+
+						return response()->json($data,$data['code']);
+					 }else{
+					 	$data = array(
+						'status' => 'success' ,
+						'code' => 200 ,
+						'message' => 'El usuario creado correctamente');
+
+						return response()->json($data,$data['code']);
+					 }
+			}else{
+				$data = array(
+				'status' => 'error' ,
+				'code' => 404 ,
+				'message' => 'Los Datos Enviados no son correctos');
+				
+				return response()->json($data,$data['code']);
+			}
+		
 
 		//Cifrar Pass
 
 		//Crear Usario
 
-		$data = array(
-			'status' => 'error' ,
-			'code' => 404 ,
-			'message' => 'El usuario no se ha creado' );
-
-		return response()->json($data,$data['code']);
+		
 	}
 
 	public function login(Request $request) {
