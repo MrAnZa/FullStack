@@ -18,10 +18,10 @@ namespace App\Http\Controllers;
 				$paramsArray=json_decode($json,true);//array
 
 				if(!empty($params) && !empty($paramsArray)){
-					//Limpiar Datos
+						//Limpiar Datos
 					$paramsArray=array_map('trim',$paramsArray);
 
-					//Validar Datos
+						//Validar Datos
 					$validate = \Validator::make($paramsArray,[
 						'name' => 'required|alpha',
 						'surname'=>'required|alpha',
@@ -38,7 +38,8 @@ namespace App\Http\Controllers;
 						return response()->json($data,$data['code']);
 					}else{
 						//Cifrar Pass
-							$pwd = password_hash($params->password, PASSWORD_BCRYPT, ['cost' => 4]);
+							//$pwd = password_hash($params->password, PASSWORD_BCRYPT, ['cost' => 4]);
+							$pwd=hash('sha256', $params->password);
 						//Crear Usario
 							$user = new User();
 							$user->name = $paramsArray['name'];
@@ -68,6 +69,12 @@ namespace App\Http\Controllers;
 			}
 
 			public function login(Request $request) {
-				return "hola desde login";
+				$JWTAuth= new \JWTAuth();
+
+				$email='AnZa@mail.com';
+				$password='123456';
+				$pwd=hash('sha256', $password);
+				
+				return response()->json($JWTAuth->signup($email,$pwd,true));
 			}
 		}
