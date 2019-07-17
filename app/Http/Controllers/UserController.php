@@ -70,11 +70,34 @@ namespace App\Http\Controllers;
 
 			public function login(Request $request) {
 				$JWTAuth= new \JWTAuth();
+				//Recibir Datos por POST
+				$json=$request->input('json',null);
+				$params=json_decode($json);
+				$paramsArray=json_decode($json,true);
+				//Validar Datos
+				$validate = \Validator::make($paramsArray,[
+					'password'=>'required'
+				]);
+				if($validate->fails()){
+				//La validacion ha fallado
+					$signup = array(
+						'status' => 'error' ,
+						'code' => 404 ,
+						'message' => 'El usuario no se ha podido identificar',
+						'erros' =>  $validate->errors());
 
-				$email='AnZa@mail.com';
-				$password='123456';
-				$pwd=hash('sha256', $password);
+					#return response()->json($signup,$signup['code']);
+				}else{
+					//Cifro la password
+					$pwd=hash('sha256', $params->password);
+					//Devolver Token o Datos
+					$signup= $JWTAuth->signup($params->email,$pwd);
+					if(!empty($params->gettoken)){
+						$signup= $JWTAuth->signup($params->email,$pwd,true);
+					}
+				}
 				
-				return response()->json($JWTAuth->signup($email,$pwd,true));
+				
+				return response()->json($signup,200);
 			}
 		}
