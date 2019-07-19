@@ -76,6 +76,7 @@ namespace App\Http\Controllers;
 				$paramsArray=json_decode($json,true);
 				//Validar Datos
 				$validate = \Validator::make($paramsArray,[
+					'email'=>'required|email', 
 					'password'=>'required'
 				]);
 				if($validate->fails()){
@@ -99,5 +100,17 @@ namespace App\Http\Controllers;
 				
 				
 				return response()->json($signup,200);
+			}
+
+			public function update(Request $request){
+				$token=$request->header('Authorization');
+				$jwtAuth=new \JWTAuth();
+				$checkToken=$jwtAuth->checkToken($token);
+				if($checkToken){
+					echo "<h1>Login correcto</h1>";
+				}else{
+					echo "<h1>Login Incorrecto</h1>";
+				}
+				die();
 			}
 		}
