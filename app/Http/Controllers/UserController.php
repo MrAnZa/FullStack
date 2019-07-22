@@ -82,12 +82,11 @@ namespace App\Http\Controllers;
 				if($validate->fails()){
 				//La validacion ha fallado
 					$signup = array(
-						'status' => 'error' ,
+						'status' => 'error2019' ,
 						'code' => 404 ,
 						'message' => 'El usuario no se ha podido identificar',
 						'erros' =>  $validate->errors());
 
-					#return response()->json($signup,$signup['code']);
 				}else{
 					//Cifro la password
 					$pwd=hash('sha256', $params->password);
@@ -103,14 +102,48 @@ namespace App\Http\Controllers;
 			}
 
 			public function update(Request $request){
+				//comprobar si el usuario esta identificado
 				$token=$request->header('Authorization');
 				$jwtAuth=new \JWTAuth();
 				$checkToken=$jwtAuth->checkToken($token);
-				if($checkToken){
-					echo "<h1>Login correcto</h1>";
+					//Actualizar Usuario
+					//Recoger los Datos por POST
+					$json=$request->input('json',null);
+					$params_array=json_decode($json,true);
+
+				if($checkToken && !empty($params_array)){
+					
+					//Sacar usuario identificado
+					$user=$jwtAuth->checkToken($token,true);
+					//Validar datos
+					$validate=\Validator::make($params_array,[
+						'name' => 'required|alpha',
+						'surname'=>'required|alpha',
+						'email'=>'required|email|unique:users,'.$user->sub
+					]);
+					//Quitar los datos que no quiero actualizar
+					unset($params_array['id']);
+					unset($params_array['role']);
+					unset($params_array['password']);
+					unset($params_array['created_at']);
+					unset($params_array['remember_token']);
+					//Actualizar usuario en BD
+						$user_update=User::where('id',$user->sub)->update($params_array);
+					//Devolver array con resultado
+					$data = array(
+						'code'=>200,
+						'status'=>'success',
+						'user'=>$user,
+						'changes'=>$params_array
+					);
 				}else{
-					echo "<h1>Login Incorrecto</h1>";
+					$data = array(
+						'code'=>400,
+						'status'=>'error',
+						'message'=>'El usuario no esta identificado'
+					);
 				}
-				die();
+				
+				return response()->json($data,$data['code']);
 			}
 		}
