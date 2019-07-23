@@ -146,4 +146,13 @@ namespace App\Http\Controllers;
 				
 				return response()->json($data,$data['code']);
 			}
+			
+			public function upload(Request $request){
+				$data = array(
+					'code'=>400,
+					'status'=>'error',
+					'message'=>'El usuario no esta identificado2019'
+				);
+				return response($data,$data['code'])->header('Content-Type','text/plain');
+			}
 		}
