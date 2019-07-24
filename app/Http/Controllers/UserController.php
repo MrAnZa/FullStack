@@ -151,8 +151,8 @@ namespace App\Http\Controllers;
 				$data = array(
 					'code'=>400,
 					'status'=>'error',
-					'message'=>'El usuario no esta identificado2019'
+					'message'=>'Error Al Subir Imagen'
 				);
-				return response($data,$data['code'])->header('Content-Type','text/plain');
+				return response()->json($data,$data['code']);
 			}
 		}
