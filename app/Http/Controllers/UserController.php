@@ -148,11 +148,26 @@ namespace App\Http\Controllers;
 			}
 			
 			public function upload(Request $request){
-				$data = array(
-					'code'=>400,
-					'status'=>'error',
-					'message'=>'Error Al Subir Imagen'
-				);
+				//Recoger datos de la peticion
+				$image = $request->file('file0');
+				//Guardar Imagen
+				if($image){
+					$image_name = time().$image->getClientOriginalName();
+					\Storage::disk('users')->put($image_name,\File::get($image));
+
+					$data = array(
+						'code'=>'200',
+						'status'=>'success',
+						'image'=>$image_name,
+					);
+				}else{
+					$data = array(
+						'code'=>400,
+						'status'=>'error',
+						'message'=>'Error Al Subir Imagen'
+					);
+				}
+				//Devolver Resultado
 				return response()->json($data,$data['code']);
 			}
 		}
