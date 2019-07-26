@@ -150,8 +150,20 @@ namespace App\Http\Controllers;
 			public function upload(Request $request){
 				//Recoger datos de la peticion
 				$image = $request->file('file0');
+				//Validacion imagen
+				$validate=\Validator::make($request->all(),[
+					'file0' =>  'required|image|mimes:jpg,jpeg,png,gif'
+				]);
 				//Guardar Imagen
-				if($image){
+				if(!$image || $validate->fails()){
+
+					$data = array(
+						'code'=>400,
+						'status'=>'error',
+						'message'=>'Error Al Subir Imagen'
+					);
+					
+				}else{
 					$image_name = time().$image->getClientOriginalName();
 					\Storage::disk('users')->put($image_name,\File::get($image));
 
@@ -159,12 +171,6 @@ namespace App\Http\Controllers;
 						'code'=>'200',
 						'status'=>'success',
 						'image'=>$image_name,
-					);
-				}else{
-					$data = array(
-						'code'=>400,
-						'status'=>'error',
-						'message'=>'Error Al Subir Imagen'
 					);
 				}
 				//Devolver Resultado
