@@ -192,4 +192,22 @@ namespace App\Http\Controllers;
 		}
 
 			} 
+
+			public function detail($id){
+				$user = User::find($id);
+				if(is_object($user)){
+					$data=array(
+						'code'=>200,
+						'status' => 'success',
+						'user'=>$user
+					);
+				}else{
+					$data=array(
+						'code'=>404,
+						'status' => 'error',
+						'message'=>'el usuario no existe'
+					);
+				}
+				return response()->json($data,$data['code']);
+			}
 		}
