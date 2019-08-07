@@ -81,4 +81,34 @@ class CategoryController extends Controller
 		//Devolver resultado
 		return response()->json($data,$data['code']);
 	}
+
+	public function update($id, Request $request){
+		// Recoger datos por POST
+		$json = $request->input('json',null);
+		$params_array= json_decode($json,true);
+		if(!empty($params_array)){
+			//Validar los datos
+			$valdiate=\Validator::make($params_array,[
+				'name' => 'required'
+			]);
+			//Quitar lo que noquiero actualizar
+				unset($params_array['id']);
+				unset($params_array['created_at']);
+			//Actualizar el registro(categoria)
+			$category=Category::where('id',$id)->update($params_array);
+			$data =[
+				'code' => 200,
+				'status' => 'success',
+				'cateory' => $params_array
+			];
+		}else{
+			$data =[
+				'code' => 400,
+				'status' => 'error',
+				'mesage' => 'No se enviarion datos'
+			];
+		}
+			//Devolver Respuesta
+			return response()->json($data, $data['code']);
+		}
 }
