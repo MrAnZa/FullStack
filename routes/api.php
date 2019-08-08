@@ -24,3 +24,4 @@ Route::get('/user/avatar/{filename}', 'UserController@getImage');
 Route::get('/user/detail/{id}','UserController@detail');
 
 Route::resource('/category','CategoryController');
+Route::resource('/post', 'PostController');
