@@ -10,7 +10,7 @@ use App\Helpers\JwtAuth;
 class PostController extends Controller
 {
 	public function __construct(){
-		$this -> middleware('api.auth', ['except' => ['index','show']]);
+		$this -> middleware('api.auth', ['except' => ['index','show','getImage']]);
 	}
     public function pruebas(Request $request){
 		return "Accion de Pruebas de Post-Controller";
@@ -202,5 +202,24 @@ class PostController extends Controller
 			}
 		//Devolver Datos
 			return response()->json($data, $data['code']);
+	}
+
+	public function getImage($filename){
+		//Comprobar si existe una imagen
+		$isset = \Storage::disk('images')->exists($filename);
+		if($isset){
+			//Conseguir la imagen
+			$file = \Storage::disk('images')->get($filename);
+			//Devolver la imagen
+			return new Response($file,200);
+		}else{
+			$data = [
+				'code' => 404,
+				'status' => 'error',
+				'message' => 'La imagen no existe'
+			];
+		}
+		//Mostrar error
+		return response()->json($data,$data['code']);
 	}
 }
