@@ -27,3 +27,5 @@ Route::resource('/category','CategoryController');
 Route::resource('/post', 'PostController');
 Route::post('/post/upload','PostController@upload');
 Route::get('/post/image/{filename}','PostController@getImage');
+Route::get('/post/category/{id}','PostController@getPostByCategory');
+Route::get('/post/user/{id}','PostController@getPostsByUser');
